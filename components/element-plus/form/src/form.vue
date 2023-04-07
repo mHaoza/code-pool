@@ -9,7 +9,11 @@
       <el-row>
         <template v-for="item in formItems" :key="item.label">
           <el-col v-if="formItemShow(item)">
-            <el-form-item :label="item.label" :rules="item.rules">
+            <el-form-item
+              :label="item.label"
+              :rules="item.rules"
+              :prop="item.field"
+            >
               <template
                 v-if="item.type === 'input' || item.type === 'password'"
               >
