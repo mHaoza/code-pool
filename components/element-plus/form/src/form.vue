@@ -1,9 +1,14 @@
 <template>
   <div class="form">
-    <el-form :label-width="labelWidth">
-      <el-row label-position="left">
+    <el-form
+      :label-width="labelWidth"
+      v-bind="formOtherOptions"
+      ref="formRef"
+      :model="modelValue"
+    >
+      <el-row>
         <template v-for="item in formItems" :key="item.label">
-          <el-col v-if="item.show?.rule(modelValue[item.show.field]) ?? true">
+          <el-col v-if="formItemShow(item)">
             <el-form-item :label="item.label" :rules="item.rules">
               <template
                 v-if="item.type === 'input' || item.type === 'password'"
@@ -58,17 +63,20 @@
 
 <script setup lang="ts">
 import type { IFormItem } from './types'
-import { defineProps, withDefaults, defineEmits } from 'vue'
+import { ElForm, type FormValidateCallback } from 'element-plus'
+import { defineProps, withDefaults, defineEmits, defineExpose, ref } from 'vue'
 
 const props = withDefaults(
   defineProps<{
     modelValue: any
     formItems?: IFormItem[]
     labelWidth?: string
+    formOtherOptions?: Object
     itemStyle?: Object
   }>(),
   {
     labelWidth: '140px',
+    formOtherOptions: () => ({}),
     itemStyle: () => ({ padding: '10px 40px' }),
     formItems: () => []
   }
@@ -79,10 +87,38 @@ const emit = defineEmits<{
   (e: 'change', value: any, field: string): void
 }>()
 
+const formRef = ref<InstanceType<typeof ElForm>>()
+
 const handleValueChange = (value: any, field: string) => {
   emit('update:modelValue', { ...props.modelValue, [field]: value })
   emit('change', value, field)
 }
+
+// 判断是否显示该表单项
+const formItemShow = (formItem: IFormItem) => {
+  // 如果没有设置show参数，默认显示
+  if (!formItem.show) return true
+
+  // 取得需要校验的值
+  const values = formItem.show?.field
+    .split(',')
+    .map((field) => props.modelValue[field])
+
+  // 传值校验并返回结果
+  return formItem.show?.rule(values) ?? true
+}
+
+/**
+ * 校验表单的所有字段
+ * @param callback 回调函数
+ * @returns 返回结果的promise对象
+ */
+const validate = (callback?: FormValidateCallback) => {
+  return formRef.value?.validate(callback)
+}
+
+// 导出部分方法/参数
+defineExpose({ validate })
 </script>
 
 <style scoped></style>
