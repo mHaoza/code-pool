@@ -53,7 +53,8 @@ const formConfig = {
       otherOptions: {
         min: 0
       },
-      show: { field: 'type', rule: (val: string) => val !== '0' }
+      // 显示规则
+      show: { field: 'type', rule: (values: any[]) => values[0] === '0' }
     }
   ]
 }

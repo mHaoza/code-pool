@@ -88,14 +88,14 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   (e: 'update:modelValue', modelValue: any): void
-  (e: 'change', value: any, field: string): void
+  (e: 'change', event: { value: any; field: string }): void
 }>()
 
 const formRef = ref<InstanceType<typeof ElForm>>()
 
 const handleValueChange = (value: any, field: string) => {
   emit('update:modelValue', { ...props.modelValue, [field]: value })
-  emit('change', value, field)
+  emit('change', { value, field })
 }
 
 // 判断是否显示该表单项

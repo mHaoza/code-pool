@@ -1,10 +1,12 @@
+import type { FormItemRule } from 'element-plus'
+
 type IFormType = 'input' | 'password' | 'select' | 'datepicker' | 'input-number'
 
 export interface IFormItem {
   field: string
   type: IFormType
   label: string
-  rules?: any[]
+  rules?: FormItemRule[]
   placeholder?: any
   // 针对select
   options?: any[]
